@@ -53,3 +53,23 @@ themeToggle.addEventListener('change', function () {
     moonIcon.style.display = 'none';
   }
 });
+
+const emptyInfo = document.getElementById('noBookDisplay');
+const addBookSummit = document.getElementById('addBookBtn');
+const addBookBtn = document.getElementById('addBook');
+const addBookModal = document.getElementsByClassName('addBookModal');
+const addBookCancelBtn = document.getElementById('cancelBtn');
+
+const deleteTitle = null;
+
+// open form when addBook button is clicked
+addBookBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  addBookModal[0].style.display = 'flex';
+});
+
+// close form when add cancel button is clicked
+addBookCancelBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  addBookModal[0].style.display = 'none';
+});
