@@ -62,6 +62,59 @@ const addBookCancelBtn = document.getElementById('cancelBtn');
 
 const deleteTitle = null;
 
+function Book(title, author, pages, noOfPagesRead) {
+  this.title = title;
+  this.by = 'by';
+  this.author = author;
+  this.pages = pages;
+  this.noOfPagesRead = noOfPagesRead;
+  this.percent = +((noOfPagesRead / pages) * 100).toFixed(1);
+  this.created = new Date();
+  this.status;
+  this.color;
+}
+
+Book.prototype.bookProgress = function () {
+  if (this.percent === 0) {
+    return { color: 'red', status: 'Unread' };
+  } if (this.percent === 100) {
+    return { color: 'green', status: 'Completed' };
+  } if (this.percent > 0 || this.percent < 100) {
+    return { color: 'yellow', status: 'Inprogress' };
+  }
+};
+
+class Library {
+  constructor() {
+    this.collection = [];
+  }
+
+  checkLibrary() {
+    if (library.collection.length < 1) {
+      emptyInfo.style.display = 'block';
+    } else {
+      emptyInfo.style.display = 'none';
+    }
+  }
+
+  createBook() {
+    // get all the values of the nook from the the form
+    const bookTitle = document.getElementById('title').value;
+    const author = document.getElementById('author').value;
+    const pages = document.getElementById('pages').value;
+    const noOfPagesRead = document.getElementById('pagesread').value;
+
+    // Create the book object using the paramaters collected from the form
+    // Then add the newly created book to the library array
+    library.collection.push(new Book(bookTitle, author, pages, noOfPagesRead));
+    addBookForm.reset();
+    addBookModal[0].style.display = 'none';
+  }
+}
+
+const library = new Library();
+library.checkLibrary();
+
 // open form when addBook button is clicked
 addBookBtn.addEventListener('click', (e) => {
   e.preventDefault();
@@ -72,4 +125,10 @@ addBookBtn.addEventListener('click', (e) => {
 addBookCancelBtn.addEventListener('click', (e) => {
   e.preventDefault();
   addBookModal[0].style.display = 'none';
+});
+
+// when add book button is clicked, create book and add the book to the library collection
+addBookSummit.addEventListener('click', (e) => {
+  e.preventDefault();
+  library.createBook();
 });
