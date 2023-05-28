@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 const themeToggle = document.getElementById('themeToggle');
 const lightThemeLink = document.getElementById('lightThemeLink');
 const darkThemeLink = document.getElementById('darkThemeLink');
@@ -59,8 +60,8 @@ const addBookSummit = document.getElementById('addBookBtn');
 const addBookBtn = document.getElementById('addBook');
 const addBookModal = document.getElementsByClassName('addBookModal');
 const addBookCancelBtn = document.getElementById('cancelBtn');
-
-const deleteTitle = null;
+const addBookForm = document.getElementById('addBookForm');
+let deleteTitle = null;
 
 function Book(title, author, pages, noOfPagesRead) {
   this.title = title;
@@ -74,6 +75,7 @@ function Book(title, author, pages, noOfPagesRead) {
   this.color;
 }
 
+// eslint-disable-next-line consistent-return
 Book.prototype.bookProgress = function () {
   if (this.percent === 0) {
     return { color: 'red', status: 'Unread' };
@@ -90,7 +92,7 @@ class Library {
   }
 
   checkLibrary() {
-    if (library.collection.length < 1) {
+    if (this.collection.length < 1) {
       emptyInfo.style.display = 'block';
     } else {
       emptyInfo.style.display = 'none';
@@ -106,14 +108,167 @@ class Library {
 
     // Create the book object using the paramaters collected from the form
     // Then add the newly created book to the library array
-    library.collection.push(new Book(bookTitle, author, pages, noOfPagesRead));
+    this.collection.push(new Book(bookTitle, author, pages, noOfPagesRead));
     addBookForm.reset();
     addBookModal[0].style.display = 'none';
   }
+
+  removeBook = (toDeleteTitle) => {
+    this.collection = this.collection.filter((book) => book.title !== toDeleteTitle);
+  };
 }
 
 const library = new Library();
 library.checkLibrary();
+
+function displayBook() {
+  const container = document.getElementById('container');
+  container.innerHTML = '';
+
+  library.collection.forEach((book) => {
+    const booksClass = document.createElement('div');
+    booksClass.classList.add('books');
+
+    const bookCard = document.createElement('div');
+    bookCard.classList.add('book-card');
+
+    const titleText = document.createElement('p');
+    titleText.classList.add('title');
+    titleText.innerText = book.title;
+
+    const byText = document.createElement('p');
+    byText.classList.add('by');
+    byText.innerText = 'by';
+
+    const authorText = document.createElement('p');
+    authorText.classList.add('author');
+    authorText.innerText = book.author;
+
+    const pagesNo = document.createElement('p');
+    pagesNo.classList.add('page-no');
+    pagesNo.innerText = `${book.pages} Pages`;
+
+    const bookProgressInfo = document.createElement('div');
+    bookProgressInfo.classList.add('bookProgress');
+
+    const progress = document.createElement('p');
+    progress.classList.add('progress');
+    progress.innerText = `${book.percent}%`;
+
+    const bookStatus = document.createElement('div');
+    bookStatus.classList.add('bookStatus');
+
+    const bookStatusIndicator = document.createElement('span');
+    bookStatusIndicator.classList.add('bookStatusIndicator');
+    bookStatusIndicator.style.backgroundColor = book.bookProgress().color;
+
+    const bookStatusIndicatorText = document.createElement('p');
+    bookStatusIndicatorText.classList.add('bookStatusIndicatorText');
+    bookStatusIndicatorText.innerText = book.bookProgress().status;
+
+    const deleteBookBtn = document.createElement('button');
+    deleteBookBtn.classList.add('delete');
+    deleteBookBtn.innerText = 'X';
+    deleteBookBtn.addEventListener('click', () => {
+      deleteTitle = book.title;
+      library.removeBook(deleteTitle);
+      displayBook();
+    });
+
+    bookCard.appendChild(titleText);
+    bookCard.appendChild(byText);
+    bookCard.appendChild(authorText);
+    bookCard.appendChild(pagesNo);
+    bookProgressInfo.appendChild(progress);
+    bookProgressInfo.appendChild(bookStatus);
+    bookStatus.appendChild(bookStatusIndicator);
+    bookStatus.appendChild(bookStatusIndicatorText);
+
+    booksClass.appendChild(bookCard);
+    booksClass.appendChild(bookProgressInfo);
+    booksClass.appendChild(deleteBookBtn);
+    container.appendChild(booksClass);
+  });
+
+  library.checkLibrary();
+}
+
+// Function to display an error message for a specific input field
+function displayErrorMessage(inputElement, errorMessage) {
+  // Get the parent li element of the input field
+  const liElement = inputElement.parentElement;
+
+  // Create and add the error message element
+  const errorElement = document.createElement('span');
+  errorElement.className = 'errorMessage';
+  errorElement.textContent = errorMessage;
+  liElement.appendChild(errorElement);
+
+  // Add the error class to the parent li element
+  liElement.classList.add('errorDiv');
+}
+
+// Function to clear all error messages and error classes
+function clearErrorMessages() {
+  // Get all error messages
+  const errorMessages = document.getElementsByClassName('errorMessage');
+
+  // Remove error messages
+  while (errorMessages.length > 0) {
+    errorMessages[0].parentNode.removeChild(errorMessages[0]);
+  }
+
+  // Remove error classes from li elements
+  const errorLiElements = document.getElementsByClassName('errorDiv');
+
+  Array.from(errorLiElements).forEach((liElement) => liElement.classList.remove('errorDiv'));
+}
+
+// Function to validate the form
+function validateForm() {
+  const bookTitle = document.getElementById('title');
+  const author = document.getElementById('author');
+  const pages = document.getElementById('pages');
+  const noOfPagesRead = document.getElementById('pagesread');
+
+  // Track form validity
+  let isValid = true;
+
+  // Reset error messages
+  clearErrorMessages();
+
+  // Check if the title is empty
+  if (bookTitle.value.trim() === '') {
+    displayErrorMessage(bookTitle, 'Please enter a book title.');
+    isValid = false;
+  }
+
+  // Check if the author is empty
+  if (author.value.trim() === '') {
+    displayErrorMessage(author, 'Please enter an author.');
+    isValid = false;
+  }
+
+  // Check if the pages is empty or not a positive number
+  if (pages.value.trim() === '' || Number(pages.value) <= 0) {
+    displayErrorMessage(pages, 'Please enter a valid number of pages.');
+    isValid = false;
+  }
+
+  // Check if the pages read is empty or not a positive number
+  if (noOfPagesRead.value.trim() === '' || Number(noOfPagesRead.value) < 0) {
+    displayErrorMessage(noOfPagesRead, 'Please enter a valid number of pages read.');
+    isValid = false;
+  }
+
+  // Check if the pages read is greater than the total pages
+  if (Number(noOfPagesRead.value) > Number(pages.value)) {
+    displayErrorMessage(noOfPagesRead, 'Pages read cannot be greater than the total pages.');
+    isValid = false;
+  }
+
+  return isValid;
+}
 
 // open form when addBook button is clicked
 addBookBtn.addEventListener('click', (e) => {
@@ -124,11 +279,18 @@ addBookBtn.addEventListener('click', (e) => {
 // close form when add cancel button is clicked
 addBookCancelBtn.addEventListener('click', (e) => {
   e.preventDefault();
+  clearErrorMessages();
+  addBookForm.reset();
   addBookModal[0].style.display = 'none';
 });
 
 // when add book button is clicked, create book and add the book to the library collection
 addBookSummit.addEventListener('click', (e) => {
+  // Prevent the form from submitting
   e.preventDefault();
-  library.createBook();
+  // Perform form validation
+  if (validateForm()) {
+    library.createBook();
+    displayBook();
+  }
 });
