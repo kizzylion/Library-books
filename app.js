@@ -67,6 +67,7 @@ function Book(title, author, pages, noOfPagesRead) {
   this.title = title;
   this.by = 'by';
   this.author = author;
+  this.dateAdded = new Date();
   this.pages = pages;
   this.noOfPagesRead = noOfPagesRead;
   this.percent = +((noOfPagesRead / pages) * 100).toFixed(1);
@@ -116,11 +117,31 @@ class Library {
   removeBook = (toDeleteTitle) => {
     this.collection = this.collection.filter((book) => book.title !== toDeleteTitle);
   };
+
+  sortByDateAdded() {
+    this.collection.sort((a, b) => a.dateAdded - b.dateAdded);
+  }
+
+  sortBooksAlphabetically() {
+    this.collection.sort((book1, book2) => {
+      const title1 = book1.title.toLowerCase();
+      const title2 = book2.title.toLowerCase();
+      if (title1 < title2) {
+        return -1;
+      } if (title1 > title2) {
+        return 1;
+      }
+      return 0;
+    });
+  }
 }
+
+// Create a library instance
 
 const library = new Library();
 library.checkLibrary();
 
+// Display books in the container
 function displayBook() {
   const container = document.getElementById('container');
   container.innerHTML = '';
@@ -148,8 +169,15 @@ function displayBook() {
     pagesNo.classList.add('page-no');
     pagesNo.innerText = `${book.pages} Pages`;
 
+    const dateAdded = document.createElement('p');
+    dateAdded.classList.add('date-added');
+    dateAdded.innerText = `${book.dateAdded.toLocaleDateString()}`;
+
     const bookProgressInfo = document.createElement('div');
     bookProgressInfo.classList.add('bookProgress');
+
+    const infoBlock = document.createElement('div');
+    infoBlock.classList.add('info-block');
 
     const progress = document.createElement('p');
     progress.classList.add('progress');
@@ -179,7 +207,10 @@ function displayBook() {
     bookCard.appendChild(byText);
     bookCard.appendChild(authorText);
     bookCard.appendChild(pagesNo);
-    bookProgressInfo.appendChild(progress);
+
+    bookProgressInfo.appendChild(infoBlock);
+    infoBlock.appendChild(dateAdded);
+    infoBlock.appendChild(progress);
     bookProgressInfo.appendChild(bookStatus);
     bookStatus.appendChild(bookStatusIndicator);
     bookStatus.appendChild(bookStatusIndicatorText);
@@ -293,4 +324,16 @@ addBookSummit.addEventListener('click', (e) => {
     library.createBook();
     displayBook();
   }
+});
+
+// Add event listener to the sort select element
+const sortSelect = document.getElementById('sortBy');
+sortSelect.addEventListener('change', () => {
+  const sortBy = sortSelect.value;
+  if (sortBy === 'alphabetically') {
+    library.sortBooksAlphabetically();
+  } else if (sortBy === 'dateAdded') {
+    library.sortByDateAdded();
+  }
+  displayBook();
 });
