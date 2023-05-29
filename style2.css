@@ -322,8 +322,8 @@ footer a:hover{
     background-color: var(--md-sys-color-primary);
     border-radius: 100%;
     font-size: 28px;
-    bottom: 20px;
-    right: 0;
+    bottom: 64px;
+    right: 24px;
     border: 1px solid var(--md-sys-color-surface);
 }
 
