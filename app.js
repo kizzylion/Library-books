@@ -337,3 +337,22 @@ sortSelect.addEventListener('change', () => {
   }
   displayBook();
 });
+
+// Get the view toggle buttons and container
+const viewGrid = document.getElementById('grid');
+const viewList = document.getElementById('list');
+const container = document.getElementById('container');
+
+// Function to toggle grid view
+function toggleGridView() {
+  container.classList.remove('list-view');
+}
+
+// Function to toggle list view
+function toggleListView() {
+  container.classList.add('list-view');
+}
+
+// Add event listeners to the view toggle buttons
+viewGrid.addEventListener('change', toggleGridView);
+viewList.addEventListener('change', toggleListView);
