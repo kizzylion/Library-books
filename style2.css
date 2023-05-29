@@ -85,6 +85,10 @@ main .info .view input:checked + label{
     background-color: var(--md-sys-color-surface);
 }
 
+/* TOOLBAR */
+#toolbar{
+    margin-bottom: 20px !important;
+}
 
 /* container */
 

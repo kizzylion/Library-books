@@ -134,12 +134,22 @@ class Library {
       return 0;
     });
   }
+
+  getLibraryStatus() {
+    const totalBooks = document.getElementById('totalBooks');
+    const finishedBooks = document.getElementById('finishedBooks');
+
+    totalBooks.innerHTML = `<strong> ${this.collection.length} </strong>`;
+  }
 }
 
 // Create a library instance
 
 const library = new Library();
 library.checkLibrary();
+
+// status details
+library.getLibraryStatus();
 
 // Display books in the container
 function displayBook() {
@@ -222,6 +232,7 @@ function displayBook() {
   });
 
   library.checkLibrary();
+  library.getLibraryStatus();
 }
 
 // Function to display an error message for a specific input field
@@ -323,6 +334,7 @@ addBookSummit.addEventListener('click', (e) => {
   if (validateForm()) {
     library.createBook();
     displayBook();
+    getLibraryStatus();
   }
 });
 
